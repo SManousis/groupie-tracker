@@ -24,7 +24,8 @@ h2{
 }
 .search-box{
     width: 600px;
-    margin: 200px auto 0;
+    margin: 
+    75px auto 0;
     border-radius: 5px;
     background: #fff;
 }
@@ -41,4 +42,31 @@ input{
     outline: 0;
     font-size: 18px;
     color: #333;
+}
+button{
+    background: transparent;
+    border: 0;
+    outline: 0;
+}
+button .fa-solid{
+    width: 25px;
+    color: #555;
+    font-size: 22px;
+    cursor: pointer;
+}
+::placeholder{
+    color: #555;    
+}
+.result-box ul{
+    border-top: 1px solid #999;
+    padding: 15px 10px;
+}
+.result-box ul li{
+    list-style: none;
+    border-radius: 3px;
+    padding: 15px 10px;
+    cursor: pointer;
+}
+.result-box ul li:hover{
+    background: #e9f3ff;
 }
