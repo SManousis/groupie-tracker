@@ -3,23 +3,42 @@
     padding: 0;
     font-family:Georgia, 'Times New Roman', Times, serif
 }
+body{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: darkslategrey;
+}
 h1{
     font-family: "Knewave", system-ui;
     font-weight: 400;
     font-style: normal;
+    margin:50px auto 0;
+
 }
 h2{
     font-family: "Chewy", system-ui;
     font-weight: 400;
     font-style: normal;
+    margin: 50px auto 0;
 }
 .search-box{
     width: 600px;
     margin: 200px auto 0;
     border-radius: 5px;
+    background: #fff;
 }
 .row{
     display: flex;
     align-items: center;
     padding: 10px 20px;
+}
+input{
+    flex: 1;
+    height: 50px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #333;
 }
