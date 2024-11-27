@@ -13,3 +13,13 @@ h2{
     font-weight: 400;
     font-style: normal;
 }
+.search-box{
+    width: 600px;
+    margin: 200px auto 0;
+    border-radius: 5px;
+}
+.row{
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+}
