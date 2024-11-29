@@ -1,0 +1,189 @@
+/* Google Font for Punk Style */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+}
+
+h2, h3 {
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+/* Header */
+header {
+  background: linear-gradient(to right, black, red, black); /* Black-Red-Black gradient */
+  color: yellow;
+  padding: 20px 40px;
+  text-align: center;
+  font-size: 40px;
+  font-family: 'Bangers', sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Band Cards Grid */
+#band-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.name {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.album {
+  color: #888;
+  font-size: 14px;
+}
+
+/* Expanded View */
+.expanded-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.expanded-card.expanded {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-left {
+  width: 20%;
+  height: 100%;
+  background-image: url('/assets/band-image.jpg'); /* Placeholder, will be dynamically set */
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+}
+
+.sidebar-right {
+  width: 20%;
+  height: 100%;
+  background-image: url('/assets/band-image.jpg');
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  margin: 0 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+.close-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #e04343;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Card Animation */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsiveness: For smaller screens */
+@media (max-width: 600px) {
+  #band-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .expanded-card {
+    flex-direction: column;
+  }
+
+  .sidebar-left, .sidebar-right {
+    width: 100%;
+    height: 200px;
+  }
+
+  .content {
+    padding: 10px;
+  }
+}
