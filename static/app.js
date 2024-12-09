@@ -47,7 +47,7 @@ function expandCard(artist) {
       <p><strong>Year of Formation:</strong> ${artist.creationDate}</p>
       <p><strong>First Album:</strong> ${artist.firstAlbum}</p>
       <p><strong>Members:</strong> ${artist.members.join(', ')}</p>
-      <h3>Upcoming Dates and Locations</h3>
+      <h3>Upcoming Events</h3>
       <ul>
         ${Object.entries(artist.events).map(([event, location]) => `<li><strong>${event}:</strong> ${location}</li>`).join('')}
       </ul>
