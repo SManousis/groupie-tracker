@@ -1,31 +1,63 @@
-/* Google Font for Punk Style */
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-
 /* Global Styles */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #fafafa;
+  position: relative;
+  height: 100%; /* Ensure body takes full height of the viewport */
+  background-color: #fafafa; /* Set a fallback background color for the body */
 }
 
-h2, h3 {
-  margin: 10px 0;
-  font-weight: bold;
+/* Apply background image with transparency */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/static/assets/background.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.5; /* Adjust transparency of the background image */
+  background-attachment: fixed; /* Ensure background image stays fixed */
+  z-index: -1; /* Ensure it stays behind all content */
 }
 
 /* Header */
 header {
-  background: linear-gradient(to right, black, red, black); /* Black-Red-Black gradient */
-  color: yellow;
-  padding: 20px 40px;
+  background-image: url('/static/assets/headerbg.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 300px;
   text-align: center;
-  font-size: 40px;
-  font-family: 'Bangers', sans-serif;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  margin-top: 0;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+header img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Footer */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px 40px;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 0;
+  border-radius: 15px;
 }
 
 /* Band Cards Grid */
@@ -90,21 +122,21 @@ header {
   pointer-events: auto;
 }
 
-.sidebar-left {
-  width: 20%;
+/* Sidebar Left and Right */
+.sidebar-left, .sidebar-right {
+  width: 200px; /* Adjust width as needed */
   height: 100%;
-  background-image: url('/assets/band-image.jpg'); /* Placeholder, will be dynamically set */
-  background-size: cover;
-  background-position: center;
+  background-position: center center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents repeating the image */
+  background-size: contain; /* Ensures the image fits within the container without distortion */
   border-radius: 8px;
 }
 
-.sidebar-right {
-  width: 20%;
-  height: 100%;
-  background-image: url('/assets/band-image.jpg');
-  background-size: cover;
-  background-position: center;
+/* If the images are <img> tags */
+.sidebar-left img, .sidebar-right img {
+  width: auto; /* Let the image keep its natural width */
+  height: 100%; /* Make the image's height fit the container */
+  object-fit: contain; /* Ensure the image fits the container without distortion */
   border-radius: 8px;
 }
 
