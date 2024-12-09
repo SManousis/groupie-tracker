@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
+	"text/template"
 )
 
 type Artist struct {
 	ID           int               `json:"id"`
+	Image        string            `json:"image"`
 	Name         string            `json:"name"`
 	Members      []string          `json:"members"`
 	CreationDate int               `json:"creationDate"`
@@ -22,10 +23,7 @@ type Artist struct {
 
 const baseUrl = "https://groupietrackers.herokuapp.com/api/"
 
-var (
-	endpoints    = []string{"locations/", "dates/", "relation/"}
-	artistsCache []Artist // Added so that the handler can get the complete artist list
-)
+var endpoints = []string{"locations/", "dates/", "relation/"}
 
 func fetchArtists(artists *[]Artist) error {
 	response, err := http.Get(baseUrl + "artists")
@@ -37,44 +35,50 @@ func fetchArtists(artists *[]Artist) error {
 	if err != nil {
 		return err
 	}
+
 	var wg sync.WaitGroup
 	for counter := range *artists {
 		for _, endpoint := range endpoints {
 			wg.Add(1)
+
 			go func(artist *Artist, endpoint string) {
 				defer wg.Done()
 				if err := updateArtistStruct(artist, endpoint); err != nil {
 					fmt.Println("Error updating artist:", err)
 				}
 			}(&(*artists)[counter], endpoint)
+
 		}
 	}
 	wg.Wait()
 	return nil
 }
+
 func updateArtistStruct(artist *Artist, endpoint string) error {
 	response, err := http.Get(baseUrl + endpoint + strconv.Itoa(artist.ID))
 	if err != nil {
 		return err
 	}
 	defer response.Body.Close()
+
 	var rawData map[string]interface{}
 	if err := json.NewDecoder(response.Body).Decode(&rawData); err != nil {
 		return err
 	}
+
 	switch endpoint {
 	case "locations/":
-		if dates, exists := rawData["dates"].([]interface{}); exists {
-			artist.Dates = make([]string, len(dates))
-			for i, v := range dates {
-				artist.Dates[i] = fmt.Sprint(v)
-			}
-		}
-	case "dates/":
 		if locations, exists := rawData["locations"].([]interface{}); exists {
 			artist.Locations = make([]string, len(locations))
 			for i, v := range locations {
 				artist.Locations[i] = fmt.Sprint(v)
+			}
+		}
+	case "dates/":
+		if dates, exists := rawData["dates"].([]interface{}); exists {
+			artist.Dates = make([]string, len(dates))
+			for i, v := range dates {
+				artist.Dates[i] = fmt.Sprint(v)
 			}
 		}
 	case "relation/":
@@ -85,30 +89,95 @@ func updateArtistStruct(artist *Artist, endpoint string) error {
 			}
 		}
 	}
+
 	return nil
 }
 
-// search handler to create a json output
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(artistsCache); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	// Fetch the artists and dynamically update them
+	artists := []Artist{}
+	err := fetchArtists(&artists)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching artists: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Prepare the data to be passed to the template
+	data := struct {
+		Artists []Artist
+	}{
+		Artists: artists,
+	}
+
+	// Prepare the template with embedded JavaScript
+	tmpl, err := template.New("home").Parse(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Groupie Tracker</title>
+        <link rel="stylesheet" href="/static/styles.css">
+    </head>
+    <body>
+        <header>
+  			<img src="/static/assets/header.png" alt="Groupie Tracker" />
+		</header>
+        <main id="band-container">
+            <!-- Cards will be dynamically injected here -->
+        </main>
+		<script>
+			window.artistData = [
+			{{range $index, $artist := .Artists}}{{if $index}}, {{end}}{
+				name: "{{.Name}}",
+				image: "{{.Image}}",
+				firstAlbum: "{{.FirstAlbum}}",
+				creationDate: {{.CreationDate}},
+				members: [{{range $i, $member := .Members}}{{if $i}}, {{end}}{{printf "%q" $member}}{{end}}],
+				dates: [{{range $i, $date := .Dates}}{{if $i}}, {{end}}{{printf "%q" $date}}{{end}}],
+				locations: [{{range $i, $location := .Locations}}{{if $i}}, {{end}}{{printf "%q" $location}}{{end}}],
+				events: {
+					{{- $first := true -}}
+					{{- range $key, $value := .Relation -}}
+						{{- if not $first}}, {{end -}}
+						{{- $first = false -}}
+						{{printf "%q: %q" $key $value}}
+					{{- end -}}
+				}
+			}{{end}}
+			];
+		</script>
+        <script src="/static/app.js" defer></script>
+        <footer>
+            <p>Groupie Tracker - All Rights Reserved &copy; 2024</p>
+        </footer>
+    </body>
+    </html>
+    `)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error parsing template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Execute the template with artist data
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error executing template: %v", err), http.StatusInternalServerError)
+		return
 	}
 }
 
 func main() {
-	start := time.Now()
-	artists := []Artist{}
-	err := fetchArtists(&artists)
-	if err != nil {
-		fmt.Printf("error: %v", err)
+	// Serve static files
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	// Serve the homepage on /
+	http.HandleFunc("/", serveHome)
+
+	// Start the server
+	fmt.Println("Server starting on http://localhost:8080...")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		fmt.Println("Error starting server:", err)
 	}
-	for _, artist := range artists {
-		fmt.Println(artist)
-	}
-	artistsCache = artists
-	elapsed := time.Since(start)
-	fmt.Printf("Execution time: %s\n", elapsed)
-	http.HandleFunc("/api/search", searchHandler) // Route for the API of the JS
-	http.ListenAndServe("localhost:8080", nil)    // initialize server
 }
