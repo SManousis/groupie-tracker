@@ -15,7 +15,7 @@ function createCards(artists) {
     card.innerHTML = `
       <img src="${artist.image}" alt="${artist.name}">
       <div class="name">${artist.name}</div>
-      <div class="year">Year of Formation: ${artist.creationDate}</div>
+      <div class="year">${artist.creationDate}</div>
     `;
     card.addEventListener('click', () => expandCard(artist));
     bandContainer.appendChild(card);
