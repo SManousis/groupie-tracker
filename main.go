@@ -25,6 +25,9 @@ const baseUrl = "https://groupietrackers.herokuapp.com/api/"
 
 var endpoints = []string{"locations/", "dates/", "relation/"}
 
+// create a var FetchArtist so that it points to the actual implementation when used in unit testing
+var FetchArtists = fetchArtists
+
 func fetchArtists(artists *[]Artist) error {
 	response, err := http.Get(baseUrl + "artists")
 	if err != nil {
@@ -96,7 +99,7 @@ func updateArtistStruct(artist *Artist, endpoint string) error {
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	// Fetch the artists and dynamically update them
 	artists := []Artist{}
-	err := fetchArtists(&artists)
+	err := FetchArtists(&artists)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching artists: %v", err), http.StatusInternalServerError)
 		return
