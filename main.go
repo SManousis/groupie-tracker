@@ -112,7 +112,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		Artists: artists,
 	}
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		http.ServeFile(w, r, "templates/error.html")
 		return
 	}
 	// Prepare the template with embedded JavaScript
