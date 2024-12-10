@@ -108,7 +108,10 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}{
 		Artists: artists,
 	}
-
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 	// Prepare the template with embedded JavaScript
 	tmpl, err := template.New("home").Parse(`
     <!DOCTYPE html>
@@ -161,8 +164,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Execute the template with artist data
-	err = tmpl.Execute(w, data)
-	if err != nil {
+	//err = tmpl.Execute(w, data)
+	if err = tmpl.Execute(w, data); err != nil {
 		http.Error(w, fmt.Sprintf("Error executing template: %v", err), http.StatusInternalServerError)
 		return
 	}
