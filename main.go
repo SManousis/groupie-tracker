@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"text/template"
 )
@@ -75,21 +76,25 @@ func updateArtistStruct(artist *Artist, endpoint string) error {
 		if locations, exists := rawData["locations"].([]interface{}); exists {
 			artist.Locations = make([]string, len(locations))
 			for i, v := range locations {
-				artist.Locations[i] = fmt.Sprint(v)
+				artist.Locations[i] = strings.ToTitle(strings.ReplaceAll(strings.ReplaceAll(fmt.Sprint(v), "_", " "), "-", ", "))
+
 			}
 		}
 	case "dates/":
 		if dates, exists := rawData["dates"].([]interface{}); exists {
 			artist.Dates = make([]string, len(dates))
 			for i, v := range dates {
-				artist.Dates[i] = fmt.Sprint(v)
+				date := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(fmt.Sprint(v), "[", ""), "]", ""), " ", ", ")
+				artist.Dates[i] = date
 			}
 		}
 	case "relation/":
 		if datesLocations, exists := rawData["datesLocations"].(map[string]interface{}); exists {
 			artist.Relation = make(map[string]string)
 			for k, v := range datesLocations {
-				artist.Relation[k] = fmt.Sprint(v)
+				location := strings.ReplaceAll(strings.ReplaceAll(fmt.Sprint(k), "_", " "), "-", ", ")
+				date := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(fmt.Sprint(v), "[", ""), "]", ""), " ", ", ")
+				artist.Relation[strings.ToTitle(location)] = date
 			}
 		}
 	}
