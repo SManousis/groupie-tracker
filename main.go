@@ -187,6 +187,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+	//just test
 
 	// Start the server
 	fmt.Printf("Server starting on port %s...\n", port)
