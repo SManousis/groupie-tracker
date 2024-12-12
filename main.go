@@ -122,55 +122,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Prepare the template with embedded JavaScript
-	tmpl, err := template.New("home").Parse(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Groupie Tracker</title>
-        <link rel="stylesheet" href="/static/styles.css">
-    </head>
-    <body>
-        <header>
-  			<img src="/static/assets/header.png" alt="Groupie Tracker" />
-		</header>
-        <main id="band-container">
-            <!-- Cards will be dynamically injected here -->
-        </main>
-		<script>
-			window.artistData = [
-			{{range $index, $artist := .Artists}}{{if $index}}, {{end}}{
-				name: "{{.Name}}",
-				image: "{{.Image}}",
-				firstAlbum: "{{.FirstAlbum}}",
-				creationDate: {{.CreationDate}},
-				members: [{{range $i, $member := .Members}}{{if $i}}, {{end}}{{printf "%q" $member}}{{end}}],
-				dates: [{{range $i, $date := .Dates}}{{if $i}}, {{end}}{{printf "%q" $date}}{{end}}],
-				locations: [{{range $i, $location := .Locations}}{{if $i}}, {{end}}{{printf "%q" $location}}{{end}}],
-				events: {
-					{{- $first := true -}}
-					{{- range $key, $value := .Relation -}}
-						{{- if not $first}}, {{end -}}
-						{{- $first = false -}}
-						{{printf "%q: %q" $key $value}}
-					{{- end -}}
-				}
-			}{{end}}
-			];
-		</script>
-        <script src="/static/app.js" defer></script>
-        <footer>
-            <p>Groupie Tracker - All Rights Reserved &copy; 2024</p>
-        </footer>
-    </body>
-    </html>
-    `)
+	tmpl, err := template.ParseFiles("templates/index.html")
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Error parsing template: %v", err), http.StatusInternalServerError)
+        return
+    }
 
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing template: %v", err), http.StatusInternalServerError)
-		return
-	}
 
 	// Execute the template with artist data
 	//err = tmpl.Execute(w, data)
